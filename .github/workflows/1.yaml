@@ -1,0 +1,68 @@
+name: List Files in Repository
+
+on: [push]
+
+jobs:
+  list-files:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: List all files
+        run: |
+          echo "Listing all files in the repository:"
+          ls -R
+
+      - name: Clone another GitHub repository
+        env:
+          GH_PAT: ${{ secrets.test_github }}
+        run: |
+          echo "Cloning another GitHub repository"
+          git clone https://username:${GH_PAT}@github.com/mohantest14242/python-testing.git
+          
+      - name: listing the all the cloned files 
+        run: 
+          ls
+      - name: install the dependecies
+        uses: actions/setup-python@v4
+        with: 
+          python-version: '3.10' 
+      - name: installing the pip 
+        run: | 
+          python -m pip install --upgrade pip
+
+      - name: install the required packages 
+        run: |
+          echo "installing the depenecieds from requirements.txt"
+          pip install -r requirements.txt
+      - name: list the files python-testing-repo
+        run: |
+          ls -R python-testing
+      - name: list the all the files in the main repo 
+        run: 
+          ls -R
+      - name: run the test cases 
+        run: 
+          pytest python-testing/tests
+      - name: run the unit testcases 
+        run: 
+          pytest python-testing/unit_test
+      - name: lint code5
+        run: |
+          flake8 src/main.py
+      - name: docker login1
+        uses: docker/login-action@v3
+        with:
+          username: ${{secrets.docker_username}}
+          password: ${{secrets.docker_password}} 
+      - name: bulding and pushing the docker image to the dockerr GitHub
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{secrets.docker_username}}/fastapi:3.0
+        
+
+

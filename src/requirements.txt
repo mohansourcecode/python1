@@ -1,0 +1,7 @@
+# Example requirements.txt
+fastapi
+uvicorn
+pytest
+flake8
+pylint
+httpx
